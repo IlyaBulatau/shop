@@ -2,7 +2,7 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import redirect, render
 from .models import *
 
-menu = ['About the site','Models car','Contacts','Input']
+menu = ['About the site','Models car','Contacts','Sign in']
 
 def home(request):
     posts = Home.objects.all()
