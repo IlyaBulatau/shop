@@ -16,8 +16,17 @@ class Home(models.Model):
     def get_absolute_url(self):
         return reverse('post', kwargs={'post_id': self.pk})
 
+    class Meta:
+        verbose_name = 'Home Page, car model'
+        verbose_name_plural = 'Home Page, car model'
+        ordering = ['time_create', 'title']
+
 class Category(models.Model):
-    name = models.CharField(max_length=100, db_index=True)
+    name = models.CharField(max_length=100, db_index=True, verbose_name='body type')
+
+    class Meta:
+        ordering = ['id']
+        verbose_name = 'Category body types car'
 
     def __str__(self):
         return self.name
