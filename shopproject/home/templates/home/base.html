@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load home_tags %}
 <html>
 <head>
 	<title>{{title}}</title>
@@ -39,13 +40,8 @@
 		<li><a href="{% url 'home' %}">Category</a></li>
 {% endif %}
 
-{% for c in cat %}
-	{% if c.pk == cat_selected %}
-		<li class="selected">{{ c.name }}></li>
-	{% else %}
-		<li><a href="{{ c.get_absolute_url }}">{{ c.name }}</a></li>
-	{% endif %}
-{% endfor %}
+{% show_categories cat_selected=cat_selected %}
+
 		<p>Our channel</p>
 		<a class="share-yt" href="https://www.youtube.com/@Opel" target="_blank" rel="nofollow"></a>
 		</li>
