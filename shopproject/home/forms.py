@@ -1,10 +1,19 @@
 from django import forms
 from .models import *
+from django.core.exceptions import ValidationError
 
 
-class AddForm(forms.Form):
-    title = forms.CharField(max_length=255)
-    slug = forms.SlugField(label='URL')
-    content = forms.CharField(widget=forms.Textarea(attrs={'cols': 60, 'rows': 10}))
-    is_published = forms.BooleanField(required=False, initial=True)
-    cat = forms.ModelChoiceField(queryset=Category.objects.all(), label='Category')
+class AddForm(forms.ModelForm):
+    class Meta:
+        model = Home
+        fields = '__all__'
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-input'}),
+            'content': forms.Textarea(attrs={'cols': 60, 'rows': 10}),
+        }
+
+    def clean_title(self):
+        title = self.cleaned_data['title']
+        if len(title) > 200:
+            raise ValidationError('length exceeds 200 characters')
+        return title

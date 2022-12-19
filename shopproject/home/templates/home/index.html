@@ -2,7 +2,7 @@
 
 {% block content %}
 <ul class="list-articles">
-	{% for p in post %}
+	{% for p in object_list %}
 			<li><div class="article-panel">
 				<p class="first">Category: {{ p.cat }}</p>
 				<p class="last">Date: {{ p.time_update | date:'D-M-Y H:i:s' }}</p>
