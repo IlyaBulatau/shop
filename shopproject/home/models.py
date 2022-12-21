@@ -20,7 +20,7 @@ class Home(models.Model):
     class Meta:
         verbose_name = 'Home Page, car model'
         verbose_name_plural = 'Home Page, car model'
-        ordering = ['time_create', 'title']
+        ordering = ['-time_create', 'title']
 
 class Category(models.Model):
     slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name='URL')

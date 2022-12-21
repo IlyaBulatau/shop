@@ -2,26 +2,21 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import *
 from .forms import *
+from .utils import *
 
-menu = [{'title': 'About the site', 'url_name': 'about'},
-        {'title': 'Add item', 'url_name': 'add_page'},
-        {'title': 'Contacts', 'url_name': 'contact'},
-        {'title': 'Sign in', 'url_name': 'login'},
-]
 
-class HomePage(ListView):
+class HomePage(DataMixin, ListView):
     model = Home
     template_name = 'home/index.html'
     context_object_name = 'posts'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = menu
-        context['title'] = 'Main Page'
-        context['cat_selected'] = 0
-        return context
+        c_def = self.get_user_context(title='Main Page')
+        return dict(list(context.items()) + list(c_def.items()))
     
     def get_queryset(self):
         return Home.objects.filter(is_published=True)
@@ -42,16 +37,17 @@ def about(request):
     return render(request, 'home/about.html', {'title': 'About Page', 'menu': menu})
 
 
-class AddPage(CreateView):
+class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     form_class = AddForm
     template_name = 'home/addpage.html'
     success_url = reverse_lazy('home')
+    login_url = reverse_lazy('home')
+    raise_exception = True
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = menu
-        context['title'] = 'Add Page'
-        return context
+        c_def = self.get_user_context(title='Add Page')
+        return dict(list(context.items()) + list(c_def.items()))
 
 
 
@@ -75,7 +71,7 @@ def login(request):
     return HttpResponse('Sign in')
 
 
-class ShowPost(DetailView):
+class ShowPost(DataMixin, DetailView):
     model = Home
     template_name = 'home/post.html'
     slug_url_kwarg = 'post_slug'
@@ -83,9 +79,8 @@ class ShowPost(DetailView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = menu
-        context['title'] = context['post']
-        return context
+        c_def = self.get_user_context(title=context['post'])
+        return dict(list(context.items()) + list(c_def.items()))
 
 
 # def show_post(request, post_slug):
@@ -101,7 +96,7 @@ class ShowPost(DetailView):
 #     return render(request, 'home/post.html', context=context)
     
 
-class CarCategory(ListView):
+class CarCategory(DataMixin,ListView):
     model = Home
     template_name = 'home/index.html'
     context_object_name = 'posts'
@@ -112,9 +107,7 @@ class CarCategory(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu'] = menu
-        context['title'] = 'Category - ' + str(context['posts'][0].cat)
-        context['cat_selected'] = context['posts'][0].cat_id
+        c_def = self.get_user_context(title='Category - ' + str(context['posts'][0].cat), cat_selected=context['posts'][0].cat_id)
         return context
 
 
