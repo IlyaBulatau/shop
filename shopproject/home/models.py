@@ -22,6 +22,7 @@ class Home(models.Model):
         verbose_name_plural = 'Home Page, car model'
         ordering = ['-time_create', 'title']
 
+
 class Category(models.Model):
     slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name='URL')
     name = models.CharField(max_length=100, db_index=True, verbose_name='body type')
@@ -35,3 +36,5 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         return reverse('category', kwargs={'cat_slug': self.slug})
+
+
