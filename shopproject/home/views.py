@@ -22,16 +22,6 @@ class HomePage(DataMixin, ListView):
         return Home.objects.filter(is_published=True)
 
 
-# def home(request):
-#     posts = Home.objects.all()
-#     context = {
-#         'post': posts,
-#         'menu': menu,
-#         'title': 'Main Page',
-#         'cat_selected': 0,
-#     }
-#     return render(request, 'home/index.html', context=context)
-
 
 def about(request):
     return render(request, 'home/about.html', {'title': 'About Page', 'menu': menu})
@@ -51,16 +41,6 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
 
 
 
-
-# def addpage(request):
-#     if request.method == 'POST':
-#         form = AddForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('home')
-#     else:
-#         form = AddForm()
-#     return render(request, 'home/addpage.html', {'title': 'Add Page', 'menu': menu, 'form': form})
 
 
 def contact(request):
@@ -83,17 +63,6 @@ class ShowPost(DataMixin, DetailView):
         return dict(list(context.items()) + list(c_def.items()))
 
 
-# def show_post(request, post_slug):
-#     post = get_object_or_404(Home, slug=post_slug)
-
-#     context = {
-#         'post': post,
-#         'menu': menu,
-#         'title': post.title,
-#         'cat_selected': post.cat_id,
-#     }
-
-#     return render(request, 'home/post.html', context=context)
     
 
 class CarCategory(DataMixin,ListView):
@@ -107,22 +76,11 @@ class CarCategory(DataMixin,ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title='Category - ' + str(context['posts'][0].cat), cat_selected=context['posts'][0].cat_id)
-        return context
+        c_def = self.get_user_context(title='Category - ' + str(context['posts'][0].cat),
+                                     cat_selected=context['posts'][0].cat_id)
+        return dict(list(context.items()) + list(c_def.items()))
 
 
-
-# def show_category(request, cat_id):
-#     posts = Home.objects.filter(cat_id=cat_id)
-#     if len(posts) == 0:
-#         raise Http404()
-#     context = {
-#         'post': posts,
-#         'menu': menu,
-#         'title': 'Main Page',
-#         'cat_selected': cat_id,
-#     }
-#     return render(request, 'home/index.html', context=context)
 
 
 
