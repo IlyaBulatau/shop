@@ -5,6 +5,7 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import logout, login
+from django.views.generic.edit import FormView
 from .models import *
 from .forms import *
 from .utils import *
@@ -21,7 +22,7 @@ class HomePage(DataMixin, ListView):
         return dict(list(context.items()) + list(c_def.items()))
     
     def get_queryset(self):
-        return Home.objects.filter(is_published=True)
+        return Home.objects.filter(is_published=True).select_related('cat')
 
 
 
@@ -45,9 +46,20 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
 
 
 
-def contact(request):
-    return HttpResponse('Contacts')
+class ContactForm(DataMixin, FormView):
+    form_class = ContactFormView
+    template_name = 'home/contact.html'
+    success_url = reverse_lazy('home')
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title='Connect')
+        return dict(list(context.items()) + list(c_def.items()))
+    
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        return redirect('home')
+    
 
 
 class ShowPost(DataMixin, DetailView):
@@ -71,12 +83,13 @@ class CarCategory(DataMixin,ListView):
     allow_empty = False
 
     def get_queryset(self):
-        return Home.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True)
+        return Home.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True).select_related('cat')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title='Category - ' + str(context['posts'][0].cat),
-                                     cat_selected=context['posts'][0].cat_id)
+        c = Category.objects.get(slug=self.kwargs['cat_slug'])
+        c_def = self.get_user_context(title='Category - ' + str(c.name),
+                                     cat_selected=c.pk)
         return dict(list(context.items()) + list(c_def.items()))
     
 
